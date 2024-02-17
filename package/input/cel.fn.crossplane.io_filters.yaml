@@ -1,0 +1,70 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.14.0
+  name: filters.cel.fn.crossplane.io
+spec:
+  group: cel.fn.crossplane.io
+  names:
+    categories:
+    - crossplane
+    kind: Filters
+    listKind: FiltersList
+    plural: filters
+    singular: filters
+  scope: Namespaced
+  versions:
+  - name: v1beta1
+    schema:
+      openAPIV3Schema:
+        description: Filters can be used to provide input to this Function.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          filters:
+            description: |-
+              Filters to apply to the desired composed resources produced by previous
+              functions in the pipeline. Each filter matches a desired composed
+              resource by name. If the expression evaluates to true, the composed
+              resource will be included. Desired composed resources that don't match
+              any filter are always included.
+            items:
+              description: |-
+                A Filter can be used to filter a desired composed resource produced by a
+                previous function in the pipeline.
+              properties:
+                expression:
+                  description: Expression is a CEL expression. See https://github.com/google/cel-spec.
+                  type: string
+                name:
+                  description: |-
+                    Name of the desired composed resource this filter should match. Supports
+                    regular expressions. Only the first matching filter will apply.
+                  type: string
+              required:
+              - expression
+              - name
+              type: object
+            type: array
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+        required:
+        - filters
+        type: object
+    served: true
+    storage: true

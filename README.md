@@ -1,39 +1,35 @@
-# function-template-go
-[![CI](https://github.com/crossplane/function-template-go/actions/workflows/ci.yml/badge.svg)](https://github.com/crossplane/function-template-go/actions/workflows/ci.yml)
+# function-cel-filter
+[![CI](https://github.com/negz/function-cel-filter/actions/workflows/ci.yml/badge.svg)](https://github.com/negz/function-cel-filter/actions/workflows/ci.yml)
 
-A template for writing a [composition function][functions] in [Go][go].
+A [composition function][functions] that can filter desired composed resources
+produced by previous functions in the pipeline using CEL expressions.
 
-To learn how to use this template:
-
-* [Follow the guide to writing a composition function in Go][function guide]
-* [Learn about how composition functions work][functions]
-* [Read the function-sdk-go package documentation][package docs]
-
-If you just want to jump in and get started:
-
-1. Replace `function-template-go` with your function in `go.mod`,
-   `package/crossplane.yaml`, and any Go imports. (You can also do this
-   automatically by running the `./init.sh <function-name>` script.)
-1. Update `input/v1beta1/` to reflect your desired input (and run `go generate`)
-1. Add your logic to `RunFunction` in `fn.go`
-1. Add tests for your logic in `fn_test.go`
-1. Update this file, `README.md`, to be about your function!
-
-This template uses [Go][go], [Docker][docker], and the [Crossplane CLI][cli] to
-build functions.
-
-```shell
-# Run code generation - see input/generate.go
-$ go generate ./...
-
-# Run tests - see fn_test.go
-$ go test ./...
-
-# Build the function's runtime image - see Dockerfile
-$ docker build . --tag=runtime
-
-# Build a function package - see package/crossplane.yaml
-$ crossplane xpkg build -f package --embed-runtime-image=runtime
+```yaml
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: function-template-go
+spec:
+  compositeTypeRef:
+    apiVersion: example.crossplane.io/v1
+    kind: XR
+  mode: Pipeline
+  pipeline:
+  # TODO(negz): Replace me with function-dummy.
+  - step: produce-composed-resources
+    functionRef:
+      name: some-composition-function
+  - step: filter-composed-resources
+    functionRef:
+      name: function-cel-filter
+    input:
+      apiVersion: cel.fn.crossplane.io/v1beta1
+      kind: Filters
+      filters:
+      # Remove the composed resource named a-desired-composed-resource
+      # from the function pipeline if the XR has spec.widgets == 42.
+      - name: a-desired-composed-resource
+        expression: observed.composed.resource.spec.widgets == 42
 ```
 
 [functions]: https://docs.crossplane.io/latest/concepts/composition-functions

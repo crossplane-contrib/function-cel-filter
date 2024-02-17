@@ -8,10 +8,18 @@ spec:
     kind: XR
   mode: Pipeline
   pipeline:
-  - step: run-the-template
+  # TODO(negz): Replace me with function-dummy.
+  - step: produce-composed-resources
     functionRef:
-      name: function-template-go
+      name: some-composition-function
+  - step: filter-composed-resources
+    functionRef:
+      name: function-cel-filter
     input:
-      apiVersion: template.fn.crossplane.io/v1beta1
-      kind: Input
-      example: "Hello world"
+      apiVersion: cel.fn.crossplane.io/v1beta1
+      kind: Filters
+      filters:
+      # Remove the desired composed resource named a-desired-composed-resource
+      # from the function pipeline if the XR has spec.widgets == 42.
+      - name: a-desired-composed-resource
+        expression: observed.composed.resource.spec.widgets == 42

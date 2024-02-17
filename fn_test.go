@@ -31,25 +31,62 @@ func TestRunFunction(t *testing.T) {
 		args   args
 		want   want
 	}{
-		"ResponseIsReturned": {
-			reason: "The Function should return a fatal result if no input was specified",
+		"EmptyFiltersDoesNothing": {
+			reason: "The function should return all desired resources if there are no filters",
 			args: args{
 				req: &fnv1beta1.RunFunctionRequest{
 					Meta: &fnv1beta1.RequestMeta{Tag: "hello"},
 					Input: resource.MustStructJSON(`{
-						"apiVersion": "template.fn.crossplane.io/v1beta1",
-						"kind": "Input",
-						"example": "Hello, world"
+						"apiVersion": "filters.cel.crossplane.io/v1beta1",
+						"kind": "Filters"
 					}`),
 				},
 			},
 			want: want{
 				rsp: &fnv1beta1.RunFunctionResponse{
 					Meta: &fnv1beta1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
-					Results: []*fnv1beta1.Result{
-						{
-							Severity: fnv1beta1.Severity_SEVERITY_NORMAL,
-							Message:  "I was run with input \"Hello, world\"!",
+				},
+			},
+		},
+		"BasicFilter": {
+			reason: "The function should filter a resource if the name matches and the CEL expression evaluates to true",
+			args: args{
+				req: &fnv1beta1.RunFunctionRequest{
+					Meta: &fnv1beta1.RequestMeta{Tag: "hello"},
+					Input: resource.MustStructJSON(`{
+						"apiVersion": "filters.cel.crossplane.io/v1beta1",
+						"kind": "Filters",
+						"filters": [
+							{
+								"name": "matching-resource",
+								"expression": "observed.composite.resource.spec.widgets == 42"
+							}
+						]
+					}`),
+					Observed: &fnv1beta1.State{
+						Composite: &fnv1beta1.Resource{
+							Resource: resource.MustStructJSON(`{
+								"spec": {
+									"widgets": 42
+								}
+							}`),
+						},
+					},
+					Desired: &fnv1beta1.State{
+						Resources: map[string]*fnv1beta1.Resource{
+							"matching-resource":     {},
+							"non-matching-resource": {},
+						},
+					},
+				},
+			},
+			want: want{
+				rsp: &fnv1beta1.RunFunctionResponse{
+					Meta: &fnv1beta1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
+					Desired: &fnv1beta1.State{
+						Resources: map[string]*fnv1beta1.Resource{
+							// matching-resource was filtered.
+							"non-matching-resource": {},
 						},
 					},
 				},
@@ -59,7 +96,7 @@ func TestRunFunction(t *testing.T) {
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			f := &Function{log: logging.NewNopLogger()}
+			f, _ := NewFunction(logging.NewNopLogger())
 			rsp, err := f.RunFunction(tc.args.ctx, tc.args.req)
 
 			if diff := cmp.Diff(tc.want.rsp, rsp, protocmp.Transform()); diff != "" {
