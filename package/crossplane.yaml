@@ -3,4 +3,16 @@ apiVersion: meta.pkg.crossplane.io/v1beta1
 kind: Function
 metadata:
   name: function-cel-filter
+  annotations:
+    meta.crossplane.io/maintainer: Crossplane Maintainers <info@crossplane.io>
+    meta.crossplane.io/source: github.com/crossplane-contrib/function-cel-filter
+    meta.crossplane.io/license: Apache-2.0
+    meta.crossplane.io/description: |
+      A composition function that conditionally filters resources using CEL
+    meta.crossplane.io/readme: |
+      This composition function filters desired composed resources produced by
+      previous functions in the pipeline. Each filter matches composed resources
+      by name using a regular expression. The filter then determines whether the
+      composed resource is desired using a Common Expression Language (CEL)
+      expression.
 spec: {}
