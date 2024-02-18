@@ -1,4 +1,4 @@
-module github.com/crossplane/function-template-go
+module github.com/crossplane-contrib/function-cel-filter
 
 go 1.21
 
