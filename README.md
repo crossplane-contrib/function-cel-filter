@@ -1,8 +1,19 @@
 # function-cel-filter
 [![CI](https://github.com/negz/function-cel-filter/actions/workflows/ci.yml/badge.svg)](https://github.com/negz/function-cel-filter/actions/workflows/ci.yml)
 
-A [composition function][functions] that can filter desired composed resources
-produced by previous functions in the pipeline using CEL expressions.
+A [composition function][functions] that [filters][filter] matching composed
+resources using [CEL expressions][cel].
+
+Each filter:
+
+* Matches composed resources by name using a regular expression.
+* Specifies whether resources should be included using a CEL expression.
+
+If a filter's CEL expression evaluates to true, Crossplane creates the matching
+composed resources.
+
+Filters only apply to matching composed resources. The function doesn't filter
+composed resources that don't match a filter. 
 
 ```yaml
 apiVersion: apiextensions.crossplane.io/v1
@@ -12,13 +23,38 @@ metadata:
 spec:
   compositeTypeRef:
     apiVersion: example.crossplane.io/v1
-    kind: XR
+    kind: NoSQL
   mode: Pipeline
   pipeline:
-  # TODO(negz): Replace me with function-dummy.
-  - step: produce-composed-resources
+  - step: patch-and-transform
     functionRef:
-      name: some-composition-function
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: table
+        base:
+          apiVersion: dynamodb.aws.upbound.io/v1beta1
+          kind: Table
+          metadata:
+            name: crossplane-quickstart-database
+          spec:
+            forProvider:
+              region: "us-east-2"
+              writeCapacity: 1
+              readCapacity: 1
+              attribute:
+                - name: S3ID
+                  type: S
+              hashKey: S3ID
+      - name: bucket
+        base:
+          apiVersion: s3.aws.upbound.io/v1beta1
+          kind: Bucket
+          spec:
+            forProvider:
+              region: us-east-2
   - step: filter-composed-resources
     functionRef:
       name: function-cel-filter
@@ -26,15 +62,11 @@ spec:
       apiVersion: cel.fn.crossplane.io/v1beta1
       kind: Filters
       filters:
-      # Remove the composed resource named a-desired-composed-resource
-      # from the function pipeline if the XR has spec.widgets == 42.
-      - name: a-desired-composed-resource
-        expression: observed.composed.resource.spec.widgets == 42
+      # Only create the bucket if the XR's spec.export field is set to "S3".
+      - name: bucket
+        expression: observed.composite.resource.spec.export == "S3"
 ```
 
 [functions]: https://docs.crossplane.io/latest/concepts/composition-functions
-[go]: https://go.dev
-[function guide]: https://docs.crossplane.io/knowledge-base/guides/write-a-composition-function-in-go
-[package docs]: https://pkg.go.dev/github.com/crossplane/function-sdk-go
-[docker]: https://www.docker.com
-[cli]: https://docs.crossplane.io/latest/cli
+[cel]: https://github.com/google/cel-spec
+[filter]: https://en.wikipedia.org/wiki/Filter_(higher-order_function)

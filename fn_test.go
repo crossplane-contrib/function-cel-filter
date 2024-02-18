@@ -49,17 +49,25 @@ func TestRunFunction(t *testing.T) {
 			},
 		},
 		"BasicFilter": {
-			reason: "The function should filter a resource if the name matches and the CEL expression evaluates to true",
+			reason: "If the filter name matches a resource, it should only be included if the CEL expression evaluates to true",
 			args: args{
 				req: &fnv1beta1.RunFunctionRequest{
 					Meta: &fnv1beta1.RequestMeta{Tag: "hello"},
+					// The first filter matches the resources but it evaluates
+					// to true, so it won't filter the resources. However the
+					// second filter will, because it also matches the resources
+					// and evaluates to false.
 					Input: resource.MustStructJSON(`{
 						"apiVersion": "filters.cel.crossplane.io/v1beta1",
 						"kind": "Filters",
 						"filters": [
 							{
-								"name": "matching-resource",
-								"expression": "observed.composite.resource.spec.widgets == 42"
+								"name": "matching-.*",
+								"expression": "observed.composite.resource.spec.watchers == 42"
+							},
+							{
+								"name": "matching-.*",
+								"expression": "observed.composite.resource.spec.widgets == 88"
 							}
 						]
 					}`),
@@ -67,6 +75,7 @@ func TestRunFunction(t *testing.T) {
 						Composite: &fnv1beta1.Resource{
 							Resource: resource.MustStructJSON(`{
 								"spec": {
+									"watchers": 42,
 									"widgets": 42
 								}
 							}`),
@@ -74,7 +83,8 @@ func TestRunFunction(t *testing.T) {
 					},
 					Desired: &fnv1beta1.State{
 						Resources: map[string]*fnv1beta1.Resource{
-							"matching-resource":     {},
+							"matching-resource-a":   {},
+							"matching-resource-b":   {},
 							"non-matching-resource": {},
 						},
 					},
@@ -85,7 +95,8 @@ func TestRunFunction(t *testing.T) {
 					Meta: &fnv1beta1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
 					Desired: &fnv1beta1.State{
 						Resources: map[string]*fnv1beta1.Resource{
-							// matching-resource was filtered.
+							// matching-resource-a was filtered.
+							// matching-resource-b was filtered.
 							"non-matching-resource": {},
 						},
 					},

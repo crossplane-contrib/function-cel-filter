@@ -61,12 +61,12 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1beta1.RunFunctionRequ
 
 		// Evaluate this filter's CEL expression.
 		expr = in.Filters[i].Expression
-		filter, err := Evaluate(f.env, req, in.Filters[i].Expression)
+		include, err := Evaluate(f.env, req, in.Filters[i].Expression)
 		if err != nil {
 			response.Fatal(rsp, errors.Wrapf(err, "cannot evaluate CEL expression %q for filter %d", expr, i))
 			return rsp, nil
 		}
-		celexps[i] = filter
+		celexps[i] = include
 	}
 
 	for name := range rsp.GetDesired().GetResources() {
@@ -82,12 +82,12 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1beta1.RunFunctionRequ
 				continue
 			}
 
-			if filter := celexps[i]; !filter {
-				log.Debug("Not filtering desired composed resource: CEL expression did not evaluate to true")
+			if include := celexps[i]; include {
+				log.Debug("Not filtering desired composed resource: CEL expression evaluated to true")
 				continue
 			}
 
-			log.Info("Filtering desired composed resource")
+			log.Info("Filtering desired composed resource: CEL expression evaluated to false")
 			delete(rsp.GetDesired().GetResources(), name)
 		}
 	}

@@ -30,10 +30,27 @@ type Filters struct {
 // A Filter can be used to filter a desired composed resource produced by a
 // previous function in the pipeline.
 type Filter struct {
-	// Name of the desired composed resource this filter should match. Supports
-	// regular expressions. Only the first matching filter will apply.
+	// Name of the desired composed resource(s) this filter should match.
+	//
+	// Use regular expressions to match multiple resources. Expressions are
+	// automatically prefixed with ^ and suffixed with $. For example 'buck.*'
+	// becomes '^buck.*$'. See https://github.com/google/re2/wiki/Syntax.
 	Name string `json:"name"`
 
 	// Expression is a CEL expression. See https://github.com/google/cel-spec.
+	// The following top-level variables are available to the expression:
+	//
+	// * observed
+	// * desired
+	// * context
+	//
+	// Example expressions:
+	//
+	// * observed.composite.resource.spec.widgets == 42
+	// * observed.resources['composed'].connection_details['user'] == 'admin'
+	// * desired.resources['composed'].resource.spec.widgets == 42
+	//
+	// See the RunFunctionRequest protobuf message for schema details.
+	// https://buf.build/crossplane/crossplane/docs/main:apiextensions.fn.proto.v1beta1
 	Expression string `json:"expression"`
 }

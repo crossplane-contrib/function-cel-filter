@@ -2,10 +2,18 @@
 apiVersion: pkg.crossplane.io/v1beta1
 kind: Function
 metadata:
-  name: function-template-go
+  name: function-patch-and-transform
+spec:
+  package: xpkg.upbound.io/crossplane-contrib/function-patch-and-transform:v0.3.0
+
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: Function
+metadata:
+  name: function-cel-filter
   annotations:
     # This tells crossplane beta render to connect to the function locally.
     render.crossplane.io/runtime: Development
 spec:
   # This is ignored when using the Development runtime.
-  package: function-template-go
+  package: function-cel-filter

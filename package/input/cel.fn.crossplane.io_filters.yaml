@@ -19,7 +19,7 @@ spec:
   - name: v1beta1
     schema:
       openAPIV3Schema:
-        description: Filters can be used to provide input to this Function.
+        description: Filters can be used to filter desired composed resources.
         properties:
           apiVersion:
             description: |-
@@ -41,12 +41,35 @@ spec:
                 previous function in the pipeline.
               properties:
                 expression:
-                  description: Expression is a CEL expression. See https://github.com/google/cel-spec.
+                  description: |-
+                    Expression is a CEL expression. See https://github.com/google/cel-spec.
+                    The following top-level variables are available to the expression:
+
+
+                    * observed
+                    * desired
+                    * context
+
+
+                    Example expressions:
+
+
+                    * observed.composite.resource.spec.widgets == 42
+                    * observed.resources['composed'].connection_details['user'] == 'admin'
+                    * desired.resources['composed'].resource.spec.widgets == 42
+
+
+                    See the RunFunctionRequest protobuf message for schema details.
+                    https://buf.build/crossplane/crossplane/docs/main:apiextensions.fn.proto.v1beta1
                   type: string
                 name:
                   description: |-
-                    Name of the desired composed resource this filter should match. Supports
-                    regular expressions. Only the first matching filter will apply.
+                    Name of the desired composed resource(s) this filter should match.
+
+
+                    Use regular expressions to match multiple resources. Expressions are
+                    automatically prefixed with ^ and suffixed with $. For example 'buck.*'
+                    becomes '^buck.*$'. See https://github.com/google/re2/wiki/Syntax.
                   type: string
               required:
               - expression

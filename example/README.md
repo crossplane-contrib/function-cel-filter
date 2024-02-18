@@ -13,13 +13,32 @@ $ go run . --insecure --debug
 $ crossplane beta render xr.yaml composition.yaml functions.yaml -r
 ---
 apiVersion: example.crossplane.io/v1
-kind: XR
+kind: NoSQL
 metadata:
   name: example-xr
 ---
-apiVersion: render.crossplane.io/v1beta1
-kind: Result
-message: I was run with input "Hello world"!
-severity: SEVERITY_NORMAL
-step: run-the-template
+apiVersion: dynamodb.aws.upbound.io/v1beta1
+kind: Table
+metadata:
+  annotations:
+    crossplane.io/composition-resource-name: table
+  generateName: example-xr-
+  labels:
+    crossplane.io/composite: example-xr
+  ownerReferences:
+  - apiVersion: example.crossplane.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: NoSQL
+    name: example-xr
+    uid: ""
+spec:
+  forProvider:
+    attribute:
+    - name: S3ID
+      type: S
+    hashKey: S3ID
+    readCapacity: 1
+    region: us-east-2
+    writeCapacity: 1
 ```
