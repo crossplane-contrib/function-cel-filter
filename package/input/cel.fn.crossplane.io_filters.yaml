@@ -55,7 +55,7 @@ spec:
 
 
                     * observed.composite.resource.spec.widgets == 42
-                    * observed.resources['composed'].connection_details['user'] == 'admin'
+                    * observed.resources['composed'].connection_details['user'] == b'admin'
                     * desired.resources['composed'].resource.spec.widgets == 42
 
 
