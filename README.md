@@ -1,5 +1,5 @@
 # function-cel-filter
-[![CI](https://github.com/negz/function-cel-filter/actions/workflows/ci.yml/badge.svg)](https://github.com/negz/function-cel-filter/actions/workflows/ci.yml)
+[![CI](https://github.com/crossplane-contrib/function-cel-filter/actions/workflows/ci.yml/badge.svg)](https://github.com/crossplane-contrib/function-cel-filter/actions/workflows/ci.yml)
 
 A [composition function][functions] that [filters][filter] matching composed
 resources using [CEL expressions][cel].
