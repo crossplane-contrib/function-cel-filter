@@ -67,6 +67,27 @@ spec:
         expression: observed.composite.resource.spec.export == "S3"
 ```
 
+
+ The following top-level variables are available to the CEL expression:
+
+ * `observed`
+ * `desired`
+ * `context`
+
+ Example expressions:
+
+ * `observed.composite.resource.spec.widgets == 42`
+ * `observed.resources['bucket'].connection_details['user'] == b'admin'`
+ * `desired.resources['bucket'].resource.spec.widgets == 42`
+ * `has(desired.resources.bucket)`
+
+ Expressions must evaluate to `true` for the composed resource to be included.
+
+ See the [RunFunctionRequest][proto] protobuf message for schema details. The
+ [introduction to CEL][cel-intro] documentation shows more example expressions.
+
 [functions]: https://docs.crossplane.io/latest/concepts/composition-functions
 [cel]: https://github.com/google/cel-spec
 [filter]: https://en.wikipedia.org/wiki/Filter_(higher-order_function)
+[proto]: https://buf.build/crossplane/crossplane/docs/main:apiextensions.fn.proto.v1beta1#apiextensions.fn.proto.v1beta1.RunFunctionRequest
+[cel-intro]: https://github.com/google/cel-spec/blob/master/doc/intro.md

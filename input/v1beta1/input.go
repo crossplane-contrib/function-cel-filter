@@ -47,7 +47,7 @@ type Filter struct {
 	// Example expressions:
 	//
 	// * observed.composite.resource.spec.widgets == 42
-	// * observed.resources['composed'].connection_details['user'] == 'admin'
+	// * observed.resources['composed'].connection_details['user'] == b'admin'
 	// * desired.resources['composed'].resource.spec.widgets == 42
 	//
 	// See the RunFunctionRequest protobuf message for schema details.
