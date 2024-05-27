@@ -7,6 +7,7 @@ import (
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/ext"
 	"google.golang.org/protobuf/types/known/structpb"
+	"k8s.io/apiserver/pkg/cel/library"
 
 	"github.com/crossplane/function-sdk-go/errors"
 	"github.com/crossplane/function-sdk-go/logging"
@@ -43,6 +44,10 @@ func NewFunction(log logging.Logger) (*Function, error) {
 		cel.OptionalTypes(),
 		ext.Strings(ext.StringsVersion(2)),
 		ext.Sets(),
+		library.URLs(),
+		library.Lists(),
+		library.Regex(),
+		library.Quantity(),
 	)
 	return &Function{log: log, env: env}, errors.Wrap(err, "cannot create CEL environment")
 }
