@@ -5,6 +5,7 @@ import (
 	"regexp"
 
 	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/ext"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/crossplane/function-sdk-go/errors"
@@ -31,6 +32,17 @@ func NewFunction(log logging.Logger) (*Function, error) {
 		cel.Variable("observed", cel.ObjectType("apiextensions.fn.proto.v1beta1.State")),
 		cel.Variable("desired", cel.ObjectType("apiextensions.fn.proto.v1beta1.State")),
 		cel.Variable("context", cel.ObjectType("google.protobuf.Struct")),
+
+		ext.Encoders(),
+		ext.Lists(),
+		ext.Math(),
+		cel.ExtendedValidations(),
+		cel.EagerlyValidateDeclarations(true),
+		cel.DefaultUTCTimeZone(true),
+		cel.CrossTypeNumericComparisons(true),
+		cel.OptionalTypes(),
+		ext.Strings(ext.StringsVersion(2)),
+		ext.Sets(),
 	)
 	return &Function{log: log, env: env}, errors.Wrap(err, "cannot create CEL environment")
 }
