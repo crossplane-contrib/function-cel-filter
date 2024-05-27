@@ -79,7 +79,7 @@ spec:
  * `observed.composite.resource.spec.widgets == 42`
  * `observed.resources['bucket'].connection_details['user'] == b'admin'`
  * `desired.resources['bucket'].resource.spec.widgets == 42`
- * `has(desired.resources.bucket)`
+ * `"bucket" in desired.resources`
 
  Expressions must evaluate to `true` for the composed resource to be included.
 
