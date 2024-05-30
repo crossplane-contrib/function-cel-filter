@@ -7,7 +7,6 @@ import (
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/ext"
 	"google.golang.org/protobuf/types/known/structpb"
-	"k8s.io/apiserver/pkg/cel/library"
 
 	"github.com/crossplane/function-sdk-go/errors"
 	"github.com/crossplane/function-sdk-go/logging"
@@ -34,20 +33,16 @@ func NewFunction(log logging.Logger) (*Function, error) {
 		cel.Variable("desired", cel.ObjectType("apiextensions.fn.proto.v1beta1.State")),
 		cel.Variable("context", cel.ObjectType("google.protobuf.Struct")),
 
-		ext.Encoders(),
+		// additional extended functions not found in k8s codebase
 		ext.Lists(),
 		ext.Math(),
-		cel.ExtendedValidations(),
-		cel.EagerlyValidateDeclarations(true),
-		cel.DefaultUTCTimeZone(true),
+		ext.Encoders(),
+
+		// extended functions found in https://github.com/kubernetes/kubernetes/blob/v1.29.3/staging/src/k8s.io/apiserver/pkg/cel/environment/base.go#L49
 		cel.CrossTypeNumericComparisons(true),
 		cel.OptionalTypes(),
 		ext.Strings(ext.StringsVersion(2)),
 		ext.Sets(),
-		library.URLs(),
-		library.Lists(),
-		library.Regex(),
-		library.Quantity(),
 	)
 	return &Function{log: log, env: env}, errors.Wrap(err, "cannot create CEL environment")
 }
