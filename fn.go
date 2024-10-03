@@ -9,7 +9,7 @@ import (
 
 	"github.com/crossplane/function-sdk-go/errors"
 	"github.com/crossplane/function-sdk-go/logging"
-	fnv1beta1 "github.com/crossplane/function-sdk-go/proto/v1beta1"
+	fnv1 "github.com/crossplane/function-sdk-go/proto/v1"
 	"github.com/crossplane/function-sdk-go/request"
 	"github.com/crossplane/function-sdk-go/response"
 
@@ -18,7 +18,7 @@ import (
 
 // Function returns whatever response you ask it to.
 type Function struct {
-	fnv1beta1.UnimplementedFunctionRunnerServiceServer
+	fnv1.UnimplementedFunctionRunnerServiceServer
 
 	log logging.Logger
 	env *cel.Env
@@ -27,16 +27,16 @@ type Function struct {
 // NewFunction creates a new Function with a CEL environment.
 func NewFunction(log logging.Logger) (*Function, error) {
 	env, err := cel.NewEnv(
-		cel.Types(&fnv1beta1.State{}, &structpb.Struct{}),
-		cel.Variable("observed", cel.ObjectType("apiextensions.fn.proto.v1beta1.State")),
-		cel.Variable("desired", cel.ObjectType("apiextensions.fn.proto.v1beta1.State")),
+		cel.Types(&fnv1.State{}, &structpb.Struct{}),
+		cel.Variable("observed", cel.ObjectType("apiextensions.fn.proto.v1.State")),
+		cel.Variable("desired", cel.ObjectType("apiextensions.fn.proto.v1.State")),
 		cel.Variable("context", cel.ObjectType("google.protobuf.Struct")),
 	)
 	return &Function{log: log, env: env}, errors.Wrap(err, "cannot create CEL environment")
 }
 
 // RunFunction runs the Function.
-func (f *Function) RunFunction(_ context.Context, req *fnv1beta1.RunFunctionRequest) (*fnv1beta1.RunFunctionResponse, error) {
+func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) (*fnv1.RunFunctionResponse, error) {
 	f.log.Info("Running function", "tag", req.GetMeta().GetTag())
 
 	rsp := response.To(req, response.DefaultTTL)
@@ -97,7 +97,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1beta1.RunFunctionRequ
 }
 
 // Evaluate the supplied CEL expression.
-func Evaluate(env *cel.Env, req *fnv1beta1.RunFunctionRequest, expression string) (bool, error) {
+func Evaluate(env *cel.Env, req *fnv1.RunFunctionRequest, expression string) (bool, error) {
 	ast, iss := env.Parse(expression)
 	if iss.Err() != nil {
 		return false, errors.Wrap(iss.Err(), "cannot parse expression")
