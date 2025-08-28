@@ -12,6 +12,7 @@ repository maintainers in their own `OWNERS.md` file.
 
 ## Maintainers
 * Nic Cope <negz@upbound.com> ([negz](https://github.com/negz))
+* Steven Borrelli <steve@borrelli.org> ([stevendborrelli](https://github.com/stevendborrelli))
 * Bob Haddleton <bob.haddleton@nokia.com> ([bobh66](https://github.com/bobh66))
 
 See [CODEOWNERS](./CODEOWNERS) for automatic PR assignment.
