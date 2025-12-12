@@ -4,6 +4,7 @@ import (
 	"context"
 	"regexp"
 
+	"github.com/crossplane-contrib/function-cel-filter/input/v1beta1"
 	"github.com/google/cel-go/cel"
 	"google.golang.org/protobuf/types/known/structpb"
 
@@ -12,8 +13,6 @@ import (
 	fnv1 "github.com/crossplane/function-sdk-go/proto/v1"
 	"github.com/crossplane/function-sdk-go/request"
 	"github.com/crossplane/function-sdk-go/response"
-
-	"github.com/crossplane-contrib/function-cel-filter/input/v1beta1"
 )
 
 // Function returns whatever response you ask it to.
