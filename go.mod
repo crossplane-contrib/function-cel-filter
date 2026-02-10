@@ -2,7 +2,7 @@ module github.com/crossplane-contrib/function-cel-filter
 
 go 1.23
 
-toolchain go1.23.2
+toolchain go1.26.0
 
 require (
 	github.com/alecthomas/kong v1.13.0
