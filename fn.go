@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"regexp"
+	"time"
 
 	"github.com/crossplane-contrib/function-cel-filter/input/v1beta1"
 	"github.com/google/cel-go/cel"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/crossplane/function-sdk-go/errors"
@@ -45,7 +47,14 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 		response.Fatal(rsp, errors.Wrapf(err, "cannot get filters from %T", req))
 		return rsp, nil
 	}
-
+	if in.TTL != "" {
+		dur, err := time.ParseDuration(in.TTL)
+		if err != nil {
+			response.Fatal(rsp, errors.Wrapf(err, "cannot set ttl"))
+			return rsp, nil
+		}
+		rsp.Meta.Ttl = durationpb.New(dur)
+	}
 	regexps := make([]*regexp.Regexp, len(in.Filters))
 	celexps := make([]bool, len(in.Filters))
 

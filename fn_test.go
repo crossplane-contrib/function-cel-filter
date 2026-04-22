@@ -102,6 +102,24 @@ func TestRunFunction(t *testing.T) {
 				},
 			},
 		},
+		"InputTTL": {
+			reason: "The function should use the TTL specified in the input",
+			args: args{
+				req: &fnv1.RunFunctionRequest{
+					Meta: &fnv1.RequestMeta{Tag: "hello"},
+					Input: resource.MustStructJSON(`{
+						"apiVersion": "filters.cel.crossplane.io/v1beta1",
+						"kind": "Filters",
+						"ttl": "5m0s"
+					}`),
+				},
+			},
+			want: want{
+				rsp: &fnv1.RunFunctionResponse{
+					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(5 * response.DefaultTTL)},
+				},
+			},
+		},
 	}
 
 	for name, tc := range cases {
