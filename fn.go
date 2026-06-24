@@ -22,6 +22,7 @@ type Function struct {
 	fnv1.UnimplementedFunctionRunnerServiceServer
 
 	log logging.Logger
+	ttl time.Duration
 	env *cel.Env
 }
 
@@ -40,7 +41,7 @@ func NewFunction(log logging.Logger) (*Function, error) {
 func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) (*fnv1.RunFunctionResponse, error) {
 	f.log.Info("Running function", "tag", req.GetMeta().GetTag())
 
-	rsp := response.To(req, response.DefaultTTL)
+	rsp := response.To(req, f.ttl)
 
 	in := &v1beta1.Filters{}
 	if err := request.GetInput(req, in); err != nil {

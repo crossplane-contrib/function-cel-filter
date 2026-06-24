@@ -125,6 +125,7 @@ func TestRunFunction(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			f, _ := NewFunction(logging.NewNopLogger())
+			f.ttl = response.DefaultTTL
 			rsp, err := f.RunFunction(tc.args.ctx, tc.args.req)
 
 			if diff := cmp.Diff(tc.want.rsp, rsp, protocmp.Transform()); diff != "" {
