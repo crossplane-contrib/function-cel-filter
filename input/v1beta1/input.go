@@ -27,7 +27,6 @@ type Filters struct {
 	Filters []Filter `json:"filters"`
 
 	// TTL for which a response can be cached in time.Duration format
-	// +kubebuilder:default="1m0s"
 	// +optional
 	TTL string `json:"ttl"`
 }

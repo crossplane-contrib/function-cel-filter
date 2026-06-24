@@ -82,7 +82,6 @@ spec:
           metadata:
             type: object
           ttl:
-            default: 1m0s
             description: TTL for which a response can be cached in time.Duration format
             type: string
         required:
