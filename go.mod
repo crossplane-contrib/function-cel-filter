@@ -1,10 +1,10 @@
 module github.com/crossplane-contrib/function-cel-filter
 
-go 1.25.10
+go 1.25.11
 
 require (
 	github.com/alecthomas/kong v1.15.0
-	github.com/crossplane/crossplane-runtime/v2 v2.3.2
+	github.com/crossplane/crossplane-runtime/v2 v2.3.3
 	github.com/crossplane/function-sdk-go v0.7.1
 	github.com/google/cel-go v0.28.1
 	github.com/google/go-cmp v0.7.0
