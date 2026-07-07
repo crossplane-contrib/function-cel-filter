@@ -25,6 +25,10 @@ type Filters struct {
 	// resource will be included. Desired composed resources that don't match
 	// any filter are always included.
 	Filters []Filter `json:"filters"`
+
+	// TTL for which a response can be cached in time.Duration format
+	// +optional
+	TTL string `json:"ttl"`
 }
 
 // A Filter can be used to filter a desired composed resource produced by a
