@@ -86,6 +86,25 @@ spec:
  See the [RunFunctionRequest][proto] protobuf message for schema details. The
  [introduction to CEL][cel-intro] documentation shows more example expressions.
 
+## Function Response Caching
+
+You can set the `ttl` input to control the Function response cache time-to-live.
+This is useful for tuning reconciliation behavior in large compositions.
+
+```yaml
+  - step: filter-composed-resources
+    functionRef:
+      name: function-cel-filter
+    input:
+      apiVersion: cel.fn.crossplane.io/v1beta1
+      kind: Filters
+      filters:
+      # Only create the bucket if the XR's spec.export field is set to "S3".
+       - name: bucket
+         expression: observed.composite.resource.spec.export == "S3"
+      ttl: "5m"
+```
+
 [functions]: https://docs.crossplane.io/latest/concepts/composition-functions
 [cel]: https://github.com/google/cel-spec
 [filter]: https://en.wikipedia.org/wiki/Filter_(higher-order_function)
