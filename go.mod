@@ -3,7 +3,7 @@ module github.com/crossplane-contrib/function-cel-filter
 go 1.26.0
 
 require (
-	cel.dev/cel-go v0.32.0
+	cel.dev/cel-go v0.33.2
 	github.com/alecthomas/kong v1.16.1
 	github.com/crossplane/crossplane-runtime/v2 v2.4.2
 	github.com/crossplane/function-sdk-go v0.7.1
