@@ -11,8 +11,9 @@ This page lists all maintainers for **this** repository. Each repository in the
 repository maintainers in their own `OWNERS.md` file.
 
 ## Maintainers
-* Nic Cope <negz@upbound.com> ([negz](https://github.com/negz))
 * Steven Borrelli <steve@borrelli.org> ([stevendborrelli](https://github.com/stevendborrelli))
+* Nic Cope <negz@upbound.com> ([negz](https://github.com/negz))
 * Bob Haddleton <bob.haddleton@nokia.com> ([bobh66](https://github.com/bobh66))
+* Tobias Kässer <tobias.kasser@upbound.io> ([kaessert](https://github.com/kaessert))
 
 See [CODEOWNERS](./CODEOWNERS) for automatic PR assignment.
