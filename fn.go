@@ -4,8 +4,8 @@ import (
 	"context"
 	"regexp"
 
+	"cel.dev/cel-go/cel"
 	"github.com/crossplane-contrib/function-cel-filter/input/v1beta1"
-	"github.com/google/cel-go/cel"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/crossplane/function-sdk-go/errors"
